@@ -2,3 +2,5 @@ streamlit
 Pillow
 reportlab
 pdf2image
+google-cloud-translate
+google-cloud-storage
