@@ -2,6 +2,8 @@ from google.cloud import translate_v3
 from google.cloud import storage
 import streamlit as st
 import os
+import json
+
 
 def upload_to_gcs(file_name, file_data):
     storage_client = storage.Client()
@@ -69,7 +71,17 @@ def download_from_gcs(file_name, target_language):
 
 
 def translated_pdf(file_name, file_data, source_language, target_language):
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "testggapi.json"
+    
+    key_json = st.secrets["GOOGLE_CLOUD_KEY_JSON"]
+
+# Kiểm tra xem key có phải là chuỗi JSON hợp lệ không
+    try:
+        key_dict = json.loads(key_json)
+        print("✅ Key JSON hợp lệ")
+    except json.JSONDecodeError as e:
+        print("❌ Lỗi decode JSON:", e)
+        print("🔍 Key bị lỗi:", key_json)
+
     
     progress_bar = st.progress(0)
     status_text = st.empty()
