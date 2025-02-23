@@ -72,15 +72,19 @@ def download_from_gcs(file_name, target_language):
 
 def translated_pdf(file_name, file_data, source_language, target_language):
     
-    key_json = st.secrets["GOOGLE_CLOUD_KEY_JSON"]
+    if "GOOGLE_CLOUD_KEY_JSON" in st.secrets:
+        key_json = st.secrets["GOOGLE_CLOUD_KEY_JSON"]
+        
+        # Sửa lỗi JSON bằng cách chuyển \\n thành \n
+        key_json_fixed = key_json.replace("\\n", "\n")
 
-# Kiểm tra xem key có phải là chuỗi JSON hợp lệ không
-    try:
-        key_dict = json.loads(key_json)
-        print("✅ Key JSON hợp lệ")
-    except json.JSONDecodeError as e:
-        print("❌ Lỗi decode JSON:", e)
-        print("🔍 Key bị lỗi:", key_json)
+        # Ghi ra file tạm
+        with open("temp_key.json", "w") as f:
+            f.write(key_json_fixed)
+
+        # Thiết lập biến môi trường
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "temp_key.json"
+
 
     
     progress_bar = st.progress(0)
