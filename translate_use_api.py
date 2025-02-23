@@ -75,15 +75,24 @@ def translated_pdf(file_name, file_data, source_language, target_language):
     if "GOOGLE_CLOUD_KEY_JSON" in st.secrets:
         key_json = st.secrets["GOOGLE_CLOUD_KEY_JSON"]
         
-        # Sửa lỗi JSON bằng cách chuyển \\n thành \n
-        key_json_fixed = key_json.replace("\\n", "\n")
+        try:
+            # Chuyển `\\n` thành `\n` đúng định dạng JSON
+            key_json_fixed = key_json.replace("\\n", "\n")
 
-        # Ghi ra file tạm
-        with open("temp_key.json", "w") as f:
-            f.write(key_json_fixed)
+            # Kiểm tra xem có phải JSON hợp lệ không
+            key_dict = json.loads(key_json_fixed)  # Nếu lỗi thì key bị sai
+            
+            # Ghi key ra file tạm
+            with open("temp_key.json", "w") as f:
+                json.dump(key_dict, f)  # Đảm bảo ghi đúng JSON
 
-        # Thiết lập biến môi trường
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "temp_key.json"
+            # Thiết lập biến môi trường
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "temp_key.json"
+            print("✅ GOOGLE_APPLICATION_CREDENTIALS đã được thiết lập!")
+
+        except json.JSONDecodeError as e:
+            print("❌ Lỗi JSONDecodeError:", e)
+            print("🔍 Nội dung key_json bị lỗi:", key_json)
 
 
     
